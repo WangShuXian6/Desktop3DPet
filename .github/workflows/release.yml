@@ -1,0 +1,84 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "**"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build and publish release
+    runs-on: windows-latest
+
+    env:
+      APP_NAME: Desktop3DPet
+      SOLUTION: DesktopPetWinUI3.sln
+      CONFIGURATION: Release
+      PLATFORM: x64
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+        with:
+          msbuild-architecture: x64
+
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v2
+
+      - name: Restore NuGet packages
+        run: nuget restore $env:SOLUTION -NonInteractive -PackagesDirectory packages
+
+      - name: Build
+        run: msbuild $env:SOLUTION /m /p:Configuration=$env:CONFIGURATION /p:Platform=$env:PLATFORM
+
+      - name: Package zip
+        shell: pwsh
+        run: |
+          $tag = "${{ github.ref_name }}"
+          $safeTag = $tag -replace '[\\/:*?"<>|]', '-'
+          $outputDir = Join-Path $env:GITHUB_WORKSPACE "bin\$env:PLATFORM\$env:CONFIGURATION"
+          if (-not (Test-Path $outputDir)) {
+            throw "Build output directory not found: $outputDir"
+          }
+
+          $stageDir = Join-Path $env:RUNNER_TEMP "$env:APP_NAME-$safeTag"
+          if (Test-Path $stageDir) {
+            Remove-Item -LiteralPath $stageDir -Recurse -Force
+          }
+          New-Item -ItemType Directory -Path $stageDir | Out-Null
+
+          Copy-Item -Path (Join-Path $outputDir "*") -Destination $stageDir -Recurse -Force
+
+          $readme = Join-Path $env:GITHUB_WORKSPACE "README.md"
+          if (Test-Path $readme) {
+            Copy-Item -Path $readme -Destination $stageDir -Force
+          }
+
+          $artifactDir = Join-Path $env:GITHUB_WORKSPACE "artifacts"
+          New-Item -ItemType Directory -Path $artifactDir -Force | Out-Null
+          $zipPath = Join-Path $artifactDir "$env:APP_NAME-$safeTag-win-x64.zip"
+          if (Test-Path $zipPath) {
+            Remove-Item -LiteralPath $zipPath -Force
+          }
+
+          Compress-Archive -Path (Join-Path $stageDir "*") -DestinationPath $zipPath -Force
+          "SAFE_TAG=$safeTag" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "ZIP_PATH=artifacts/$env:APP_NAME-$safeTag-win-x64.zip" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.APP_NAME }}-${{ env.SAFE_TAG }}-win-x64
+          path: ${{ env.ZIP_PATH }}
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ env.ZIP_PATH }}
+          generate_release_notes: true

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files"><UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier></Filter>
+    <Filter Include="Header Files"><UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier></Filter>
+    <Filter Include="XAML"><UniqueIdentifier>{7F0D4B87-3A36-4E87-A01D-624D7F6EE1F0}</UniqueIdentifier></Filter>
+    <Filter Include="Assets"><UniqueIdentifier>{5F6CFF95-9F39-4B18-A9E9-FED0B6177A9D}</UniqueIdentifier></Filter>
+  </ItemGroup>
+</Project>

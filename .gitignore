@@ -1,0 +1,59 @@
+# Visual Studio workspace
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.VC.db
+*.VC.opendb
+*.opensdf
+*.sdf
+*.ipch
+
+# Build outputs
+bin/
+obj/
+[Bb]uild/
+artifacts/
+out/
+x64/
+x86/
+[Dd]ebug/
+[Rr]elease/
+AppPackages/
+
+# C++ / MSBuild generated files
+*.obj
+*.pch
+*.pdb
+*.ilk
+*.idb
+*.exp
+*.lib
+*.dll
+*.exe
+*.appx
+*.appxbundle
+*.msix
+*.msixbundle
+*.pri
+*.tlog
+*.lastbuildstate
+DesktopPet/Generated Files/
+
+# CMake generated files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+compile_commands.json
+CMakeUserPresets.json
+cmake-build-*/
+
+# NuGet restore output
+packages/
+*.nupkg
+
+# Logs and local OS files
+*.log
+Thumbs.db
+Desktop.ini
